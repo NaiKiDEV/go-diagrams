@@ -71,7 +71,7 @@ func main() {
 		
 		if len(vertexEdges) > 1 {
 			defaultGap := 1
-			edgeLengthWithDefaultGap := vertexEdgeTitleLength + defaultGap * (len(vertexEdges))
+			edgeLengthWithDefaultGap := vertexEdgeTitleLength + defaultGap * len(vertexEdges)
 			vertexTitleEdgeTitleDiff := edgeLengthWithDefaultGap - vertexTitleLength
 			vertexTitlePaddingLeft := (edgeLengthWithDefaultGap - vertexTitleLength) / 2
 
