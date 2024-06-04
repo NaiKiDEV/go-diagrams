@@ -23,6 +23,8 @@ func main() {
 	levelGraphNodes(graph, 0, 1, []int{}, leveledNodes)
 
 	fmt.Printf("%+v\n", leveledNodes)
+	// Output
+	// [{id:0 level:1} {id:1 level:2} {id:2 level:2} {id:3 level:3} {id:4 level:4}]
 
 }
 
@@ -30,7 +32,9 @@ func levelGraphNodes(graph map[int][]int, current int, level int, visited []int,
 	graphEdges := graph[current]
 	visited = append(visited, current)
 
-	leveledNodes[current] = LeveledNodes{id: current, level: level}
+	if leveledNodes[current].level < current {
+		leveledNodes[current] = LeveledNodes{id: current, level: level}
+	}
 
 	for _, edge := range graphEdges {
 		if slices.Contains(visited, edge) {
