@@ -5,7 +5,7 @@ import (
 	"slices"
 )
 
-type LeveledNodes struct {
+type LeveledNode struct {
 	id    int
 	level int
 }
@@ -19,7 +19,7 @@ func main() {
 	graph[3] = []int{4}
 	graph[4] = []int{}
 
-	leveledNodes := make([]LeveledNodes, len(graph))
+	leveledNodes := make([]LeveledNode, len(graph))
 	levelGraphNodes(graph, 0, 1, []int{}, leveledNodes)
 
 	fmt.Printf("%+v\n", leveledNodes)
@@ -28,12 +28,12 @@ func main() {
 
 }
 
-func levelGraphNodes(graph map[int][]int, current int, level int, visited []int, leveledNodes []LeveledNodes) {
+func levelGraphNodes(graph map[int][]int, current int, level int, visited []int, leveledNodes []LeveledNode) {
 	graphEdges := graph[current]
 	visited = append(visited, current)
 
 	if leveledNodes[current].level < current {
-		leveledNodes[current] = LeveledNodes{id: current, level: level}
+		leveledNodes[current] = LeveledNode{id: current, level: level}
 	}
 
 	for _, edge := range graphEdges {
