@@ -2,97 +2,41 @@ package main
 
 import (
 	"fmt"
-	"strings"
-
-	"github.com/NaiKiDEV/go-diagrams/graphs"
+	"slices"
 )
 
-type BasicNode struct {
-	title string
-}
-
-func NewBasicNode(title string) BasicNode {
-	return BasicNode{ title: title }
+type LeveledNodes struct {
+	id    int
+	level int
 }
 
 func main() {
-	graph := graphs.New[BasicNode]();
-	
-	vertex1 := graphs.NewVertex(1, NewBasicNode("User"))
-	vertex2 := graphs.NewVertex(2, NewBasicNode("Contacts"))
-	vertex3 := graphs.NewVertex(3, NewBasicNode("Address"))
+	graph := make(map[int][]int)
 
-	graph.AddVertex(vertex1)
-	graph.AddVertex(vertex2)
-	graph.AddVertex(vertex3)
-	
-	graph.AddEdge(vertex1, vertex2)
-	graph.AddEdge(vertex1, vertex3)
-	graph.AddEdge(vertex2, vertex3)
+	graph[0] = []int{1, 2}
+	graph[1] = []int{4}
+	graph[2] = []int{3}
+	graph[3] = []int{4}
+	graph[4] = []int{}
 
-	vertex4 := graphs.NewVertex(4, NewBasicNode("Testing"))
-	graph.AddVertex(vertex4)
-	graph.AddEdge(vertex4, vertex2)
-	graph.AddEdge(vertex4, vertex3)
-	graph.AddEdge(vertex4, vertex1)
-	graph.AddEdge(vertex4, vertex1)
-	
-	vertex5 := graphs.NewVertex(5, NewBasicNode("SAME"))
-	graph.AddVertex(vertex5)
-	graph.AddEdge(vertex5, vertex5)
-	graph.AddEdge(vertex5, vertex5)
-	graph.AddEdge(vertex5, vertex5)
-		
-	edges := graph.GetEdges()
-	for _, vertex := range graph.GetVertexes() {
-		vertexEdges := make([]string, 0)
-		for _, edge := range edges {
-			if vertex == edge.GetFromVertex() {
-				vertexEdges = append(vertexEdges, edge.GetToVertex().GetData().title)
-				// Debug info
-				// fmt.Printf("'%s' -> '%s'\n", vertex.GetData().title, edge.GetToVertex().GetData().title)
-			}
-		}
+	leveledNodes := make([]LeveledNodes, len(graph))
+	levelGraphNodes(graph, 0, 1, []int{}, leveledNodes)
 
-		// Need recursive traversal for deeper levels
-		
-		if len(vertexEdges) == 0 {
+	fmt.Printf("%+v\n", leveledNodes)
+
+}
+
+func levelGraphNodes(graph map[int][]int, current int, level int, visited []int, leveledNodes []LeveledNodes) {
+	graphEdges := graph[current]
+	visited = append(visited, current)
+
+	leveledNodes[current] = LeveledNodes{id: current, level: level}
+
+	for _, edge := range graphEdges {
+		if slices.Contains(visited, edge) {
 			continue
 		}
 
-		// Rendering logic for each vertex (1 level support only)
-		vertexEdgeTitleLength := 0
-		for _, edgeTitle := range vertexEdges {
-			vertexEdgeTitleLength += len(edgeTitle)
-		}
-		
-		vertexTitle := vertex.GetData().title
-		vertexTitleLength := len(vertexTitle)
-		
-		if len(vertexEdges) > 1 {
-			defaultGap := 1
-			edgeLengthWithDefaultGap := vertexEdgeTitleLength + defaultGap * len(vertexEdges)
-			vertexTitleEdgeTitleDiff := edgeLengthWithDefaultGap - vertexTitleLength
-			vertexTitlePaddingLeft := (edgeLengthWithDefaultGap - vertexTitleLength) / 2
-
-			gapModifier := 0
-			if vertexTitleEdgeTitleDiff % 2 == 1 {
-				gapModifier = 1
-			}
-
-			calculatedGap := defaultGap + gapModifier
-
-			fmt.Println(strings.Repeat(" ", vertexTitlePaddingLeft), vertexTitle)
-			for _, edgeTitle := range vertexEdges {
-				fmt.Print(edgeTitle, strings.Repeat(" ", calculatedGap))
-			}
-			fmt.Println()
-		} else if len(vertexEdges) == 1 {
-			fmt.Println(vertexTitle)
-			fmt.Println(strings.Repeat(" ", vertexTitleLength / 2 - vertexEdgeTitleLength % 2) + "|")
-			fmt.Println(vertexEdges[0])
-		}
-
-		fmt.Println();
+		levelGraphNodes(graph, edge, level+1, visited, leveledNodes)
 	}
 }
